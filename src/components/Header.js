@@ -76,8 +76,6 @@ class Header extends Component {
                               <p>Item added to Cart</p>
                             </div>
                             </div>
-                            <div className={this.props.cartOverlayStatusOn ? "cart-overlay-background" : "cart-overlay-background hide"}
-                            onClick={() => this.props.close()}></div>
                     </header>
                   )
                 }

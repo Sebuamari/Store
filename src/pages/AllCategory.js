@@ -49,6 +49,8 @@ class AllCategory extends Component {
           else {
             return(
               <div className='category-container' onClick={() => this.props.close()}>
+                <div className={this.props.cartOverlayStatusOn ? "cart-overlay-background" : "cart-overlay-background hide"}
+                  onClick={() => this.props.close()}></div>
                 <div className='category-name'>{store.getState().category}</div>
                 <div className='content'>
                   {/* filtering data by category */}
@@ -76,6 +78,12 @@ class AllCategory extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    cartOverlayStatusOn: state.cartOverlayStatusOn
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     close: () =>
@@ -83,4 +91,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null,mapDispatchToProps)(AllCategory);
+export default connect(mapStateToProps,mapDispatchToProps)(AllCategory);

@@ -123,7 +123,7 @@ class PDP extends Component {
             )
 
             return (
-              <div className='pdp-container'>
+              <div className='pdp-container' onClick={() => this.props.close()}>
                       <div className='pdp'>
                         <div className='photos'>
                           {dataSet.gallery.map( image => {
@@ -211,7 +211,9 @@ const mapDispatchToProps = (dispatch) => {
     updateBagItems: (bag) =>
       dispatch({ type: "ADD_TO_CART", bag: bag }),
     updateAlertStatus: (status) =>
-      dispatch({ type: "CHANGE_ALERT_STATUS", alertStatus: status })
+      dispatch({ type: "CHANGE_ALERT_STATUS", alertStatus: status }),
+    close: () =>
+      dispatch({ type: "CLOSE"})
     };
 };
 

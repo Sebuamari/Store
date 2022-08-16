@@ -3,6 +3,7 @@ import { gql } from '@apollo/client'
 import { Query } from '@apollo/client/react/components'
 import Product from "../components/Product"
 import { store } from '../redux/store'
+import { connect } from 'react-redux'
 import '../styles/category.css'
 import '../styles/cart-overlay.css'
 
@@ -39,7 +40,7 @@ const GET_ALL = gql`
   }
 }`
 
-export default class Clothes extends Component {
+class Clothes extends Component {
     render() {
     return (
       <Query query={GET_ALL}>
@@ -51,7 +52,9 @@ export default class Clothes extends Component {
           
           else {
             return(
-              <div className='category-container'>
+              <div className='category-container' onClick={() => this.props.close()}>
+                <div className={this.props.cartOverlayStatusOn ? "cart-overlay-background" : "cart-overlay-background hide"}
+                  onClick={() => this.props.close()}></div>
                 <div className='category-name'>{store.getState().category}</div>
                 <div className='content'>
                   {/* filtering data by category */}
@@ -78,3 +81,18 @@ export default class Clothes extends Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    cartOverlayStatusOn: state.cartOverlayStatusOn
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    close: () =>
+      dispatch({ type: "CLOSE"})
+  };
+};
+
+export default connect(mapStateToProps,mapDispatchToProps)(Clothes);

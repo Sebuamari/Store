@@ -24,7 +24,7 @@ class Cart extends Component {
     let totalWithTax = total + total * tax;
 
     return (
-      <div className='cart-page'>
+      <div className='cart-page' onClick={() => this.props.close()}>
         <div className='cart'>Cart</div>
         <div className='products'>
             { 
@@ -82,7 +82,9 @@ const mapDispatchToProps = (dispatch) => {
         dispatch({
           type: "DECREASE",
           productKey: productKey
-        })
+        }),
+      close: () =>
+        dispatch({ type: "CLOSE"})
     };
 };
   
