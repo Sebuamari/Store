@@ -6,30 +6,27 @@ import { connect } from "react-redux";
 import "../styles/pdp.css"
 
 const GET_PRODUCT_DETAILS = gql`
-query Categories {
-  categories {
-    products {
-      id
-      name
-      gallery
-      description
-      attributes {
+  query product($id: String!){
+    product(id: $id){
         name
-        items {
-          value
+        gallery
+        description
+        attributes {
+          name
+          items {
+            value
+          }
         }
-      }
-      prices {
-        currency {
-          label
-          symbol
+        prices {
+          currency {
+            label
+            symbol
+          }
+          amount
         }
-        amount
-      }
-      brand
-      inStock
+        brand
+        inStock
     }
-  }
 }`
 
 class PDP extends Component {
@@ -42,7 +39,7 @@ class PDP extends Component {
     checkedKeyboard:store.getState().productKeyboard,
     checkedIMG: this.props.checkedIMG
   }
-
+  //change product chosen attribute value
   changeAttribute = (e) => {
     if(e.target.attributes[1].value === "Size" && /\d/.test(e.target.innerHTML)=== false){
       this.setState({
@@ -70,16 +67,16 @@ class PDP extends Component {
       })
     }
   }
-
+  //change checked image
   changeImage = (e) => {
     this.setState({
       checkedIMG: e.target.src
     })
   }
-
+  //add product in the cart
   addToCart = (data) => {
     // if product is in stock add it in cart
-    if(data.inStock){{
+    if(data.inStock){
         this.props.updateBagItems({
         brand: data.brand,
         gallery: data.gallery,
@@ -99,17 +96,84 @@ class PDP extends Component {
               })
             )
       }))})
+      //show alert that product is added in the cart
       this.props.updateAlertStatus(!this.props.alertStatus);
+      //hide alert that product is added in the cart
       setTimeout(() => {
         this.props.updateAlertStatus(!this.props.alertStatus);
       }, 2000);
       }
-    }
+  }
+  //show Images
+  showImages = (gallery) => {
+    return gallery.map( image => {
+      return(
+        <div className='single-photo'>
+          <img className={this.state.checkedIMG === image ? "product-image chosen" : "product-image"} 
+          src={image} onClick={this.changeImage} alt="productPic"/>
+        </div>
+      )
+    })
+  }    
+  //defining background Class
+  defineBackgroundClass = (status) => {
+    return status ? "cart-overlay-background" : "cart-overlay-background hide"
+  }
+  //showing product price
+  showPrice = (prices) => {
+      return prices.filter( price => 
+      price.currency.label === this.props.currency)[0].currency.symbol + " " +
+      prices.filter( price => 
+      price.currency.label === this.props.currency)[0].amount
+  }
+  //definiing button class
+  defineButtonClass = (inStock) => {
+    return inStock ? 'add-to-cart' : 'product-out-of-stock'
+  }
+  //defining Item class to show off checked attributes
+  defineItemClass = (attributeName, value) => {
+    return attributeName === "Size" && this.state.checkedSize === value ? "size checked-size" :
+    attributeName === "Size" && this.state.checkedSizeFoot === value ? "size checked-size" :
+    attributeName === "Capacity" && this.state.checkedCapacity === value ? "size checked-size" :
+    attributeName === "With USB 3 ports" && this.state.checkedPorts === value ? "size checked-size" :
+    attributeName === "Touch ID in keyboard" && this.state.checkedKeyboard === value ? "size checked-size" : "size" 
+  }
+  //defining color class
+  defineColorClass = (checkedValue,value) =>{
+    return checkedValue === value ? "color checked-clr" : "color"
+  }
+  //map attributes
+  mapAttributes = (attributes) => {
+    return attributes.map( data => {
+      return(
+        <div>
+          <div className='txt'>{data.name.toUpperCase()}:</div>
+          <div className="choices">{this.showItems(data)}</div>
+        </div>
+      )                                
+    })
+  }
+  //showing attribute items
+  showItems = (data) => {
+    return data.items.map( item => 
+      {
+       if(data.name === "Color"){
+         return(
+           <div id={item.value} type={data.name} className={this.defineColorClass(this.state.checkedColor,item.value)} 
+           onClick={this.changeAttribute} style={{backgroundColor: item.value}}></div>
+         )
+       } else {
+         return(
+           <div id={item.value} type={data.name} className={this.defineItemClass(data.name,item.value)} 
+             onClick={this.changeAttribute}>{item.value}</div>
+         )
+       }
+     })
   }
 
   render() {
     return(
-      <Query query={GET_PRODUCT_DETAILS}>
+      <Query query={GET_PRODUCT_DETAILS} variables={{id: this.props.productID}}>
         {({data, loading, error})=>{
             
           if (error) return <h1 style={{ textAlign: "center", margin: "10rem" }}>An Error Occured.</h1>
@@ -117,72 +181,30 @@ class PDP extends Component {
           if (loading) return <h1 style={{ textAlign: "center", margin: "10rem" }}>Loading...</h1>
           
           else {
-            const dataSet = data.categories[0].products.find(product => 
-              product.id === this.props.productID
-              // mapping through products
-            )
-
             return (
-              <div className='pdp-container' onClick={() => this.props.close()}>
+              <div className='pdp-container' onClick={() => this.props.close()}>             
+                <div className={this.defineBackgroundClass(this.props.cartOverlayStatusOn)}></div>
                       <div className='pdp'>
-                        <div className='photos'>
-                          {dataSet.gallery.map( image => {
-                            return(
-                              <div className='single-photo'>
-                                <img className={this.state.checkedIMG === image ? "product-image chosen" : "product-image"} 
-                                src={image} onClick={this.changeImage} alt="productPic"/>
-                              </div>
-                            )
-                          })}
-                        </div>
+                        <div className='photos'>{this.showImages(data.product.gallery)}</div>
                         <div className='description'>
                           <div className='chosen-img-container'>
                             <img className="product-img-chosen" src={this.state.checkedIMG} alt="productPic"/>
                           </div>
                           <div className='info-pack'>
-                            <div className='brand'>{dataSet.brand}</div>
-                            <div className='name'>{dataSet.name}</div>
-                              {dataSet.attributes.map( data => {
-                                  return(
-                                    <div>
-                                      <div className='txt'>{data.name.toUpperCase()}:</div>
-                                      <div className="choices">
-                                      {data.items.map( item => 
-                                       {
-                                        if(data.name === "Color"){
-                                          return(
-                                            <div id={item.value} type={data.name} className={this.state.checkedColor === item.value ? "color checked-clr" : "color"} 
-                                            onClick={this.changeAttribute} style={{backgroundColor: item.value}}></div>
-                                          )
-                                        } else {
-                                          return(
-                                            <div id={item.value} type={data.name} className={
-                                              data.name === "Size" && this.state.checkedSize === item.value ? "size checked-size" :
-                                              data.name === "Size" && this.state.checkedSizeFoot === item.value ? "size checked-size" :
-                                              data.name === "Capacity" && this.state.checkedCapacity === item.value ? "size checked-size" :
-                                              data.name === "With USB 3 ports" && this.state.checkedPorts === item.value ? "size checked-size" :
-                                              data.name === "Touch ID in keyboard" && this.state.checkedKeyboard === item.value ? "size checked-size" : "size" 
-                                            } 
-                                              onClick={this.changeAttribute}>{item.value}</div>
-                                          )
-                                        }
-                                      })
-                                      }
-                                      </div>
-                                    </div>
-                                  )                                
-                              })}
+                            <div className='brand'>{data.product.brand}</div>
+                            <div className='name'>{data.product.name}</div>
+                              {this.mapAttributes(data.product.attributes)}
                             <div className='prc'>PRICE:</div>
-                            <div className='prc-value'>{dataSet.prices.filter( price => 
-                                price.currency.label === this.props.currency)[0].currency.symbol + " " +
-                                dataSet.prices.filter( price => 
-                                  price.currency.label === this.props.currency)[0].amount}
-                            </div>
+                            <div className='prc-value'>{this.showPrice(data.product.prices)}</div>
                             {/* adding add-to-cart button or disabling it if the item is out of stock */}
-                            <button className={dataSet.inStock ? 'add-to-cart' : 'product-out-of-stock'}
-                            onClick={() => this.addToCart(dataSet)}>
-                              {dataSet.inStock ? "ADD TO CART" : "OUT OF STOCK"}</button>
-                            <p className='prod-description' dangerouslySetInnerHTML={{__html: dataSet.description}}>
+                            <button className={this.defineButtonClass(data.product.inStock)}
+                              onClick={() => this.addToCart(data.product)}>
+                              {data.product.inStock ? "ADD TO CART" : "OUT OF STOCK"}
+                            </button>
+                            <p className='prod-description'>{
+                                require('html-react-parser')(
+                                  data.product.description
+                                )}
                             </p>
                           </div>
                         </div>
@@ -202,7 +224,8 @@ const mapStateToProps = (state) => {
     currency: state.currency,
     productID: state.productID,
     checkedIMG: state.productIMG,
-    alertStatus: state.alertStatus
+    alertStatus: state.alertStatus,
+    cartOverlayStatusOn: state.cartOverlayStatusOn
   };
 };
 

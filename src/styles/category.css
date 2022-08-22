@@ -64,6 +64,7 @@ header > .center{
     border-radius: 5px;
     background-color:var(--alert-background);
 }
+.pdp-container > .cart-overlay-background,
 .category-container > .cart-overlay-background{
     position: absolute;
     width: 100%;
@@ -141,7 +142,8 @@ header > .hide{
     height: 45px;
     text-align: center;
 }
-.convert > .checked{
+.convert > .checked,
+.convert > .valute:hover{
     background: var(--valute-checked);
 }
 #valute{

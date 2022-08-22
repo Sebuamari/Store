@@ -5,6 +5,18 @@ import CartItem from '../components/CartItem'
 import "../styles/cart.css"
 
 class Cart extends Component {
+  //show products
+  showProducts = (bag) => {
+    return bag.map( (product, index) => {
+      return(
+          <CartItem id={index} img={product.gallery} attributes={product.attributes} 
+          quantity={product.quantity} brand={product.brand} name={product.name}
+          prices={product.prices} increase={this.props.increaseQuantity} 
+          decrease={this.props.decreaseQuantity}/>
+      )
+    })
+  }
+
   render() {
     // declaring total price and tax variables
     let total = 0;
@@ -18,25 +30,15 @@ class Cart extends Component {
      : 0;
      // total price of the cart without TAX
      prices.length > 0 ? prices.map( price => {
-      total += price
-     }) : total=total;
+      return total += price
+     }) : total += 0;
     // finding total price including 21% tax
     let totalWithTax = total + total * tax;
 
     return (
       <div className='cart-page' onClick={() => this.props.close()}>
         <div className='cart'>Cart</div>
-        <div className='products'>
-            { 
-              store.getState().bag.map( (product, index) => {
-                return(
-                    <CartItem id={index} img={product.gallery} attributes={product.attributes} 
-                    quantity={product.quantity} brand={product.brand} name={product.name}
-                    prices={product.prices} increase={this.props.increaseQuantity} 
-                    decrease={this.props.decreaseQuantity}/>
-                )
-            })}
-        </div>
+        <div className='products'>{this.showProducts(store.getState().bag)}</div>
         <div className='place-order'>
                 <div className='order-detail'>
                     <p>Tax 21%:</p>

@@ -4,55 +4,67 @@ import { connect } from "react-redux"
 import add from "../img/add.png"
 
 class Product extends Component {
+  //adding item to the cart with default attributes and quantity of 1
+  addToCart = () => {
+    this.props.updateBagItems({
+      brand: this.props.productData.brand,
+      gallery: this.props.productData.gallery,
+      name: this.props.productData.name,
+      prices: this.props.productData.prices,
+      quantity: 1,
+      attributes: this.props.productData.attributes.map( attribute => ({
+          attributeName: attribute.name,
+          items: attribute.items.map ( item => ({
+            value: item.value,
+            checkedValue: attribute.name === "Size" && /\d/.test(item.value) ? "40" :
+            attribute.name === "Size" && /\d/.test(item.value)===false ? "S" :
+            attribute.name === "Capacity" && this.props.productData.name === "iMac 2021" ? "256GB" :
+            attribute.name === "Capacity" && this.props.productData.name !== "iMac 2021" ? "512G" :
+            attribute.name === "With USB 3 ports" ? "Yes" :
+            attribute.name === "Touch ID in keyboard" ? "Yes" : "#44FF03"
+          })
+      )})) 
+    });
+    this.props.updateAlertStatus(!this.props.alertStatus);
+    setTimeout(() => {
+      this.props.updateAlertStatus(!this.props.alertStatus);
+    }, 2000);
+  }
+  //saving product data to show again in case of page refreshing
+  saveData = (capacity,image) => {
+    this.props.changeProductId(this.props.productData.id)
+    this.props.changeProductImg(image[0])
+    this.props.changeProductCapacity(capacity)
+    this.props.changeProductBrand(this.props.productData.brand)
+  }
+  //defininig Stock Class
+  defineStockClass = (inStock) => {
+    return inStock ? 'product' : 'product out-of-stock'
+  }
+  //defining Price Class
+  definePriceClass = (inStock) => {
+    return inStock ? 'price' : 'price out-of-stock'
+  }
 
   render() {
-    //declairing some default attribute values
-    let capacity=this.props.productData.attributes.filter( attribute => attribute.name === "Capacity").length > 0 ? 
+    //declairing some default attribute values to save them and show the same product again in case of refreshing the page
+    let capacity = this.props.productData.attributes.filter( attribute => attribute.name === "Capacity").length > 0 ? 
       this.props.productData.attributes.filter( attribute => attribute.name === "Capacity")[0].items[0].value : "";
-    let price=this.props.productData.prices.filter( price => price.currency.label===this.props.currency)[0].amount
+    let price = this.props.productData.prices.filter( price => price.currency.label===this.props.currency)[0].amount
     + this.props.productData.prices.filter( price => price.currency.label===this.props.currency)[0].currency.symbol;
-    let image=this.props.productData.gallery;
+    let image = this.props.productData.gallery;
 
     return (
       <div id="product" className={this.props.filterClass}>
-          <div className='product-view' onClick={() => {
-            this.props.changeProductId(this.props.productData.id)
-            this.props.changeProductImg(image[0])
-            this.props.changeProductCapacity(capacity)
-            this.props.changeProductBrand(this.props.productData.brand)
-          }}>
-            <Link to={this.props.link}><img className={this.props.imgClass} src={image[0]} alt="Product" /></Link>
+          <div className='product-view' onClick={() => {this.saveData(capacity,image)}}>
+            <Link to={this.props.link}>
+              <img className={this.props.imgClass} src={image[0]} alt="Product" />
+            </Link>
             <p className={this.props.stockStatus}>Out of Stock</p>
           </div>
-          <p className={this.props.productData.inStock ? 'product' : 'product out-of-stock'}>{this.props.productData.name} - {this.props.productData.brand}</p>
-          <img className={this.props.addClass} src={add} alt="add"
-            onClick={() => {
-              // adding item to the cart with default attributes and quantity of 1
-              this.props.updateBagItems({
-                brand: this.props.productData.brand,
-                gallery: this.props.productData.gallery,
-                name: this.props.productData.name,
-                prices: this.props.productData.prices,
-                quantity: 1,
-                attributes: this.props.productData.attributes.map( attribute => ({
-                    attributeName: attribute.name,
-                    items: attribute.items.map ( item => ({
-                      value: item.value,
-                      checkedValue: attribute.name === "Size" && /\d/.test(item.value) ? "40" :
-                      attribute.name === "Size" && /\d/.test(item.value)===false ? "S" :
-                      attribute.name === "Capacity" && this.props.productData.name === "iMac 2021" ? "256GB" :
-                      attribute.name === "Capacity" && this.props.productData.name !== "iMac 2021" ? "512G" :
-                      attribute.name === "With USB 3 ports" ? "Yes" :
-                      attribute.name === "Touch ID in keyboard" ? "Yes" : "#44FF03"
-                    })
-                )})) 
-              });
-              this.props.updateAlertStatus(!this.props.alertStatus);
-              setTimeout(() => {
-                this.props.updateAlertStatus(!this.props.alertStatus);
-              }, 2000);
-            }}/>
-          <p className={this.props.productData.inStock ? 'price' : 'price out-of-stock'}>{price}</p>
+          <p className={this.defineStockClass(this.props.productData.inStock)}>{this.props.productData.name} - {this.props.productData.brand}</p>
+          <img className={this.props.addClass} src={add} alt="add" onClick={ () => this.addToCart()}/>
+          <p className={this.definePriceClass(this.props.productData.inStock)}>{price}</p>
       </div>
     )
   }

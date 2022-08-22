@@ -8,8 +8,8 @@ import '../styles/category.css'
 import '../styles/cart-overlay.css'
 
 const GET_ALL = gql`
- query Categories {
-  categories {
+ query getCategoryByName ($title: String!) {
+  category(input:{title: $title}){
     name
     products {
       id
@@ -36,10 +36,28 @@ const GET_ALL = gql`
   }
 }`
 
-class AllCategory extends Component {
+class Category extends Component {
+    //defining background Class
+    defineBackgroundClass = (status) => {
+      return status ? "cart-overlay-background" : "cart-overlay-background hide"
+    }
+    //show category products
+    showProducts = (products) => {
+        return products.map( (product, index) => {
+        return(
+          <Product productData = { product } id={index}
+          imgClass={product.inStock ? "product-img" : "product-img out-of-stock"} 
+          stockStatus={product.inStock ? "hide" : "stockStatus"}
+          filterClass={product.inStock ? "activatedFilter" : ""}
+          addClass={product.inStock ? "activatedCart" : "deactivatedCart"}
+          link="/PDP"/>
+        )
+      })
+    }
+
     render() {
     return (
-      <Query query={GET_ALL}>
+      <Query query={GET_ALL}  variables={{title: this.props.category.toLowerCase()}}>
         {({data, loading, error})=>{
             
           if (error) return <h1 style={{ textAlign: "center", margin: "10rem" }}>An Error Occured.</h1>
@@ -49,25 +67,9 @@ class AllCategory extends Component {
           else {
             return(
               <div className='category-container' onClick={() => this.props.close()}>
-                <div className={this.props.cartOverlayStatusOn ? "cart-overlay-background" : "cart-overlay-background hide"}
-                  onClick={() => this.props.close()}></div>
+                <div className={this.defineBackgroundClass(this.props.cartOverlayStatusOn)}></div>
                 <div className='category-name'>{store.getState().category}</div>
-                <div className='content'>
-                  {/* filtering data by category */}
-                  {data.categories.filter(category => 
-                    category.name==="all"
-                    // mapping through products
-                  )[0].products.map( (product, index) => {
-                    return(
-                      <Product productData = { product } id={index}
-                      imgClass={product.inStock ? "product-img" : "product-img out-of-stock"} 
-                      stockStatus={product.inStock ? "hide" : "stockStatus"}
-                      filterClass={product.inStock ? "activatedFilter" : ""}
-                      addClass={product.inStock ? "activatedCart" : "deactivatedCart"}
-                      link="/PDP"/>
-                    )
-                  })}
-                </div>
+                <div className='content'>{this.showProducts(data.category.products)}</div>
               </div>
             )
           }
@@ -80,6 +82,7 @@ class AllCategory extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    category: state.category,
     cartOverlayStatusOn: state.cartOverlayStatusOn
   };
 };
@@ -91,4 +94,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps,mapDispatchToProps)(AllCategory);
+export default connect(mapStateToProps,mapDispatchToProps)(Category);

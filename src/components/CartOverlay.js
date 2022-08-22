@@ -4,8 +4,21 @@ import { connect } from "react-redux";
 import CartOverlayItem from './CartOverlayItem'
 
 class CartOverlay extends Component {
+  //show items
+  showItems = (items) => {
+    return items.length > 0 ?
+    items.map( (product,index) => {
+      return (
+        <CartOverlayItem img={product.gallery[0]} id={index} 
+        productName={product.name} brand={product.brand} prices={product.prices}
+        attributes={product.attributes}
+        quantity={product.quantity} increase={this.props.increaseQuantity} 
+        decrease={this.props.decreaseQuantity}/>
+      )
+      })
+   : ""
+  }
   render() {
-    
     let total = 0;
     let tax = 0.21;
     // filtering bag item prices by current chosen currency and multiplying it by product quantity
@@ -17,8 +30,8 @@ class CartOverlay extends Component {
      : 0;
      // total price of the cart without TAX
      prices.length > 0 ? prices.map( price => {
-      total += price
-     }) : total=total;
+      return total += price
+     }) : total += 0;
     // finding total price including 21% tax
     let totalWithTax = total + total * tax;
 
@@ -31,21 +44,7 @@ class CartOverlay extends Component {
                           <div className='my-bag-items'>{this.props.items}</div>
                           <div className='my-bag-items'>&nbsp; items</div> 
                         </div>
-                        <div className='products-container'>
-                          {
-                            this.props.bagItems.length > 0 ?
-                              this.props.bagItems.map( (product,index) => {
-                                return (
-                                  <CartOverlayItem img={product.gallery[0]} id={index} 
-                                  productName={product.name} brand={product.brand} prices={product.prices}
-                                  attributes={product.attributes}
-                                  quantity={product.quantity} increase={this.props.increaseQuantity} 
-                                  decrease={this.props.decreaseQuantity}/>
-                                )
-                                })
-                             : ""
-                          }
-                        </div>
+                        <div className='products-container'>{this.showItems(this.props.bagItems)}</div>
                         <div className='checkout'>
                             <div className='total-price'>
                               <div className='total-price-txt'>Total:</div>

@@ -14,20 +14,60 @@ const GET_CURRENCIES = gql`{
   currencies {
      symbol
      label
-   }
-  }`
+  }
+}`
 
 class Header extends Component {
-    state = {
-        currency: this.props.category
-      };
-
+      state = {
+          currency: this.props.category
+        };
+      //setting currency
       setCurrency = (e) => {
         this.setState ({
           currencyStatusOn:!this.state.currencyStatusOn
         });
         this.props.changeCurrency(e.target.id, e.target.innerHTML[0]+e.target.innerHTML[1]);
       };
+      //show categories in header
+      showCategories = () => {
+        return ["ALL","TECH","CLOTHES"].map( category => {
+          return(
+            <div className={this.props.category === category ? "category clicked" : "category"} onClick={() => {
+              this.props.close();
+              this.props.changeCategory(category)
+            }}><Link className='text' to="/">{category}</Link></div>
+          )
+        })
+      }
+      //defining currency switcher class
+      defineCurrencySwitcherClass = (status) => {
+        return status ? "convert" : "hide"
+      }
+      //defining currency class
+      defineCurrencyClass = (label) => {
+        return store.getState().currency === label ? "valute checked" : "valute"
+      }
+      //showing currencies
+      showCurrencies = (currencies) => {
+        return currencies.map( currency => {
+          return(
+            <div id={currency.label} className={this.defineCurrencyClass(currency.label)} 
+            onClick={this.setCurrency}>{currency.symbol} {currency.label}</div>
+          )
+        })
+      }
+      //defining cart Items class
+      defineCartItemsClass = (items) => {
+        return items > 0 ? "item-number shown" : "item-number"
+      }
+      //defining cart overlay class
+      defineCartoverlayClass = (status) => {
+        return status ? "show" : "hide"
+      }
+      //defining alert class
+      defineAlertClass = (status) => {
+        return status ? 'cart-alert' : 'hide'
+      }
 
       render() {
           return (
@@ -41,11 +81,7 @@ class Header extends Component {
                 else {
                   return(
                     <header>
-                        <div className="left">
-                            <div className={this.props.category==="ALL" ? "category clicked" : "category"} onClick={() => this.props.changeCategory("ALL")}><Link className='text' to="/">ALL</Link></div>
-                            <div className={this.props.category==="TECH" ? "category clicked" : "category"} onClick={() => this.props.changeCategory("TECH")}><Link className='text' to="/TECH">TECH</Link></div>
-                            <div className={this.props.category==="CLOTHES" ? "category clicked" : "category"} onClick={() => this.props.changeCategory("CLOTHES")}><Link className='text' to="/CLOTHES">CLOTHES</Link></div>
-                        </div>
+                        <div className="left">{this.showCategories()}</div>
                         <div className="center" onClick={this.props.clearBag}>
                             <img src={logo} alt="logo"/>
                         </div>
@@ -54,28 +90,21 @@ class Header extends Component {
                                 <p  className='valute'>{this.props.currencySymbol}</p>
                                 <img id="vector" src={vector} alt="vector"/>
                             </div> 
-                            <div className={this.props.currencyStatusOn ? "convert" : "hide"}>
-                              {data.currencies.map( currency => {
-                                return(
-                                  <div id={currency.label} className={store.getState().currency === currency.label ? "valute checked" : "valute"} 
-                                  onClick={this.setCurrency}>{currency.symbol} {currency.label}</div>
-                                )
-                              })}
-                            </div>
+                            <div className={this.defineCurrencySwitcherClass(this.props.currencyStatusOn)}>{this.showCurrencies(data.currencies)}</div>
                             <div className='mini-cart'>
                                 <div className='cart-icon-container' onClick={() => this.props.changeCartOverlayStatus()}>
-                                  <span className={this.props.items > 0 ? "item-number shown" : "item-number"}>{this.props.items}</span>
+                                  <span className={this.defineCartItemsClass(this.props.items)}>{this.props.items}</span>
                                   <img id="cart" className="cart-icon" src={cart} alt="cart"/>
                                 </div>
-                                <div className={this.props.cartOverlayStatusOn ? "show" : "hide"}>
+                                <div className={this.defineCartoverlayClass(this.props.cartOverlayStatusOn)}>
                                   <CartOverlay items={this.state.items}/>
                                 </div>
                             </div>
                             {/* showing message about item being added to the ca */}
-                            <div className={this.props.alertStatus ? 'cart-alert' : 'hide'}>
+                            <div className={this.defineAlertClass(this.props.alertStatus)}>
                               <p>Item added to Cart</p>
                             </div>
-                            </div>
+                        </div>
                     </header>
                   )
                 }
@@ -93,8 +122,7 @@ const mapStateToProps = (state) => {
     currencySymbol: state.currencySymbol,
     cartOverlayStatusOn: state.cartOverlayStatusOn,
     alertStatus: state.alertStatus,
-    items: state.items,
-    category: state.category
+    items: state.items
   };
 };
 

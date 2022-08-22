@@ -90,7 +90,6 @@
     width: 24px;
     height: 24px;
     margin-left: 8px;
-
     background: rgba(0, 0, 0, 0.73);
     transform: matrix(-1, 0, 0, 1, 0, 0);
 }
