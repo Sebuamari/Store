@@ -13,6 +13,7 @@ const GET_PRODUCT_DETAILS = gql`
         description
         attributes {
           name
+          type
           items {
             value
           }
@@ -106,9 +107,9 @@ class PDP extends Component {
   }
   //show Images
   showImages = (gallery) => {
-    return gallery.map( image => {
+    return gallery.map( (image, index) => {
       return(
-        <div className='single-photo'>
+        <div key={index} className='single-photo'>
           <img className={this.state.checkedIMG === image ? "product-image chosen" : "product-image"} 
           src={image} onClick={this.changeImage} alt="productPic"/>
         </div>
@@ -146,7 +147,7 @@ class PDP extends Component {
   mapAttributes = (attributes) => {
     return attributes.map( data => {
       return(
-        <div>
+        <div key={data.name}>
           <div className='txt'>{data.name.toUpperCase()}:</div>
           <div className="choices">{this.showItems(data)}</div>
         </div>
@@ -157,14 +158,14 @@ class PDP extends Component {
   showItems = (data) => {
     return data.items.map( item => 
       {
-       if(data.name === "Color"){
+       if(data.type === "swatch"){
          return(
-           <div id={item.value} type={data.name} className={this.defineColorClass(this.state.checkedColor,item.value)} 
+           <div key={item.value} id={item.value} type={data.name} className={this.defineColorClass(this.state.checkedColor,item.value)} 
            onClick={this.changeAttribute} style={{backgroundColor: item.value}}></div>
          )
        } else {
          return(
-           <div id={item.value} type={data.name} className={this.defineItemClass(data.name,item.value)} 
+           <div key={item.value} id={item.value} type={data.name} className={this.defineItemClass(data.name,item.value)} 
              onClick={this.changeAttribute}>{item.value}</div>
          )
        }

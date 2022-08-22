@@ -32,10 +32,10 @@ class Header extends Component {
       showCategories = () => {
         return ["ALL","TECH","CLOTHES"].map( category => {
           return(
-            <div className={this.props.category === category ? "category clicked" : "category"} onClick={() => {
+            <div key={category} className={this.props.category === category ? "category clicked" : "category"} onClick={() => {
               this.props.close();
               this.props.changeCategory(category)
-            }}><Link className='text' to="/">{category}</Link></div>
+            }}><Link className='text' to={`/${category}`}>{category}</Link></div>
           )
         })
       }
@@ -51,7 +51,7 @@ class Header extends Component {
       showCurrencies = (currencies) => {
         return currencies.map( currency => {
           return(
-            <div id={currency.label} className={this.defineCurrencyClass(currency.label)} 
+            <div key={currency.label} id={currency.label} className={this.defineCurrencyClass(currency.label)} 
             onClick={this.setCurrency}>{currency.symbol} {currency.label}</div>
           )
         })

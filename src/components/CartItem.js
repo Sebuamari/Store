@@ -56,7 +56,7 @@ export default class CartItem extends Component {
     mapAttributes = (attributes) => {
       return attributes.map( data => {
         return(
-          <div className='attribute-container'>
+          <div key={data.attributeName} className='attribute-container'>
             <div className='txt'>{data.attributeName.toUpperCase()}:</div>
             <div className="choices">{this.showAttributes(data)}</div>
           </div>
@@ -68,12 +68,12 @@ export default class CartItem extends Component {
       return data.items.map( item => {
         if(data.attributeName === "Color"){
           return(
-            <div id={item.value} type={data.attributeName} className={this.defineColorClass(item.checkedValue)} 
+            <div key={item.value} id={item.value} type={data.attributeName} className={this.defineColorClass(item.checkedValue)} 
             onClick={this.changeAttribute} style={{backgroundColor: item.value}}></div>
           )
         } else {
           return(
-            <div id={item.value} type={data.attributeName} className={ this.defineAttributeClass(data.attributeName,item.checkedValue,item.value) } 
+            <div key={item.value} id={item.value} type={data.attributeName} className={ this.defineAttributeClass(data.attributeName,item.checkedValue,item.value) } 
               >{item.value}</div>
           )
         }

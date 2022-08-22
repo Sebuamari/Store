@@ -45,7 +45,7 @@ class Category extends Component {
     showProducts = (products) => {
         return products.map( (product, index) => {
         return(
-          <Product productData = { product } id={index}
+          <Product productData = { product } id={index} key={index}
           imgClass={product.inStock ? "product-img" : "product-img out-of-stock"} 
           stockStatus={product.inStock ? "hide" : "stockStatus"}
           filterClass={product.inStock ? "activatedFilter" : ""}

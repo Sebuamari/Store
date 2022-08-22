@@ -21,7 +21,7 @@ class Product extends Component {
             attribute.name === "Capacity" && this.props.productData.name === "iMac 2021" ? "256GB" :
             attribute.name === "Capacity" && this.props.productData.name !== "iMac 2021" ? "512G" :
             attribute.name === "With USB 3 ports" ? "Yes" :
-            attribute.name === "Touch ID in keyboard" ? "Yes" : "#44FF03"
+            attribute.type === "Touch ID in keyboard" ? "Yes" : "#44FF03"
           })
       )})) 
     });

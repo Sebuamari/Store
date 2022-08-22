@@ -9,7 +9,7 @@ class Cart extends Component {
   showProducts = (bag) => {
     return bag.map( (product, index) => {
       return(
-          <CartItem id={index} img={product.gallery} attributes={product.attributes} 
+          <CartItem key={index} id={index} img={product.gallery} attributes={product.attributes} 
           quantity={product.quantity} brand={product.brand} name={product.name}
           prices={product.prices} increase={this.props.increaseQuantity} 
           decrease={this.props.decreaseQuantity}/>

@@ -9,7 +9,7 @@ class CartOverlay extends Component {
     return items.length > 0 ?
     items.map( (product,index) => {
       return (
-        <CartOverlayItem img={product.gallery[0]} id={index} 
+        <CartOverlayItem img={product.gallery[0]} id={index} key={index}
         productName={product.name} brand={product.brand} prices={product.prices}
         attributes={product.attributes}
         quantity={product.quantity} increase={this.props.increaseQuantity} 
@@ -18,6 +18,7 @@ class CartOverlay extends Component {
       })
    : ""
   }
+
   render() {
     let total = 0;
     let tax = 0.21;

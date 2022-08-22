@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Category from './pages/Category';
 import Header from './components/Header';
 import PDP from './pages/PDP';
@@ -11,13 +11,11 @@ export default class App extends Component {
       <div className='app'>
       <Router>
         <Header/>
-          <Routes>
-            <Route exact path="/" element={<Category />}/>
-            <Route exact path="/TECH" element={<Category />}/>
-            <Route exact path="/CLOTHES" element={<Category />}/>
-            <Route exact path="/CART" element={<Cart />}/>
-            <Route exact path="/PDP" element={<PDP />}/>
-          </Routes>
+        <Routes>
+          <Route exact path="/:category" element={<Category />}/>
+          <Route exact path="/CART" element={<Cart />}/>
+          <Route exact path="/PDP" element={<PDP />}/>
+        </Routes>
       </Router>
       </div>
     )
