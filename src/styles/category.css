@@ -63,6 +63,7 @@ header > .center{
     margin-top: 110px;
     border-radius: 5px;
     background-color:var(--alert-background);
+    z-index: 1;
 }
 .pdp-container > .cart-overlay-background,
 .category-container > .cart-overlay-background{

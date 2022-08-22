@@ -127,18 +127,18 @@ const rootReducer = (state = initialState, action) => {
                 product.name === action.bag.name)
             // if there is any same named prouct in the cart
             if ( sameProduct.length !== 0 ){
-                sameProduct.forEach( i => {
-                    i.forEach( j => {
+                sameProduct.forEach( indexOne => {
+                    sameProduct[indexOne].attributes.forEach( indexTwo => {
                         // counter for attribute matches
                         let counter = 0;
                         // finding same attribute for the target product
                         // let sameAttribute = [];
                         let sameAttribute = action.bag.attributes.filter( attribute => 
-                            attribute.attributeName === sameProduct[j].attributes[i].attributeName)
+                            attribute.attributeName === sameProduct[indexTwo].attributes[indexOne].attributeName)
                             console.log(sameAttribute)
                         // finding checked attribute value for the cart product
                         // let chosenValue = [];
-                        let chosenValue = sameProduct[j].attributes[i].items.filter( item =>
+                        let chosenValue = sameProduct[indexTwo].attributes[indexOne].items.filter( item =>
                             item.value === item.checkedValue )
                         // if the action bag product has chosen the same attribute values 
                         // as the product in the cart, we just increase the quantity of the 
@@ -146,18 +146,18 @@ const rootReducer = (state = initialState, action) => {
                         if( sameAttribute[0].items.filter( item => 
                             item.value === item.checkedValue &&
                             item.value === chosenValue[0].value).length !== 0 ){
-                                if(counter === sameProduct[j].attributes.length - 1){
+                                if(counter === sameProduct[indexTwo].attributes.length - 1){
                                     // increase the quantity of the product in the cart by 
                                     // the quantity of the action bag product
-                                    sameProduct[j].quantity += action.bag.quantity;
+                                    sameProduct[indexTwo].quantity += action.bag.quantity;
                                     localStorage.setItem("bag", JSON.stringify([...state.bag]))
                                     JSON.parse(localStorage.getItem("bag")).map( product => 
                                         totalQuantity += product.quantity)
                                     localStorage.setItem("totalQuantity", totalQuantity)
                                     // if this happens we do not need to check other products 
                                     // from the sameProduct array so we are stopping for loops
-                                    i = sameProduct[j].attributes.length;
-                                    j = sameProduct.length;
+                                    indexOne = sameProduct[indexTwo].attributes.length;
+                                    indexTwo = sameProduct.length;
                                     return{
                                         ...state,
                                         bag: JSON.parse(localStorage.getItem("bag")),
@@ -176,7 +176,7 @@ const rootReducer = (state = initialState, action) => {
                         else if( sameAttribute[0].items.filter( item => 
                             item.value === item.checkedValue &&
                             item.value === chosenValue[0].value).length === 0 &&
-                            j === sameProduct.length - 1){
+                            indexTwo === sameProduct.length - 1){
                                 localStorage.setItem("bag", JSON.stringify([...state.bag, action.bag]))
                                 JSON.parse(localStorage.getItem("bag")).map( product => 
                                     totalQuantity += product.quantity)

@@ -202,11 +202,11 @@ class PDP extends Component {
                               onClick={() => this.addToCart(data.product)}>
                               {data.product.inStock ? "ADD TO CART" : "OUT OF STOCK"}
                             </button>
-                            <p className='prod-description'>{
+                            <div className='prod-description'>{
                                 require('html-react-parser')(
                                   data.product.description
                                 )}
-                            </p>
+                            </div>
                           </div>
                         </div>
                       </div>
