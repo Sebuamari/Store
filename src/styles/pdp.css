@@ -13,7 +13,6 @@
     margin: 0;
 }
 .pdp-container > .pdp{
-    margin-top: 80px;
     background-color:var(--background-color);
     display: flex;
     flex-direction: row;

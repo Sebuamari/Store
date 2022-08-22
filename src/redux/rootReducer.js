@@ -127,8 +127,8 @@ const rootReducer = (state = initialState, action) => {
                 product.name === action.bag.name)
             // if there is any same named prouct in the cart
             if ( sameProduct.length !== 0 ){
-                for( let j=0; j<sameProduct.length; j++){
-                    for( let i=0; i < sameProduct[j].attributes.length; i++ ){
+                sameProduct.forEach( i => {
+                    i.forEach( j => {
                         // counter for attribute matches
                         let counter = 0;
                         // finding same attribute for the target product
@@ -188,7 +188,9 @@ const rootReducer = (state = initialState, action) => {
                                 }
                             }
                     }
+                    )
                 }
+                )
             } 
             // if there is no same named product in the cart
             else { 
