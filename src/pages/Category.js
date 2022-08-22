@@ -60,9 +60,9 @@ class Category extends Component {
       <Query query={GET_ALL}  variables={{title: this.props.category.toLowerCase()}}>
         {({data, loading, error})=>{
             
-          if (error) return <h1 style={{ textAlign: "center", margin: "10rem" }}>An Error Occured.</h1>
+          if (error) return <h1 className='error'>An Error Occured.</h1>
 
-          if (loading) return <h1 style={{ textAlign: "center", margin: "10rem" }}>Loading...</h1>
+          if (loading) return <h1 className='loading'>Loading...</h1>
           
           else {
             return(

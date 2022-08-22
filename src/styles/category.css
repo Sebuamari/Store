@@ -12,6 +12,11 @@ body{
     margin: 0;
     background:var(--background-color);
 }
+.error,
+.loading{
+    text-align: center;
+    margin: 10rem;
+}
 #root{
     width: 100%;
     height: 100%;
