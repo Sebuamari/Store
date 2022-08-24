@@ -4,7 +4,11 @@ import { connect } from 'react-redux'
 import CartItem from '../components/CartItem'
 import "../styles/cart.css"
 
-class Cart extends Component {
+class Cart extends Component {    
+  //defining background Class
+  defineBackgroundClass = (status) => {
+    return status ? "cart-overlay-background" : "cart-overlay-background hide"
+  }
   //show products
   showProducts = (bag) => {
     return bag.map( (product, index) => {
@@ -37,6 +41,7 @@ class Cart extends Component {
 
     return (
       <div className='cart-page' onClick={() => this.props.close()}>
+        <div className={this.defineBackgroundClass(this.props.cartOverlayStatusOn)}></div>
         <div className='cart'>Cart</div>
         <div className='products'>{this.showProducts(store.getState().bag)}</div>
         <div className='place-order'>
@@ -64,6 +69,7 @@ const mapStateToProps = (state) => {
       bagItems: state.bag,
       currency: state.currency,
       currencySymbol: state.currencySymbol,
+      cartOverlayStatusOn: state.cartOverlayStatusOn,
       items: state.items
     };
   };

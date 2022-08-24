@@ -12,6 +12,7 @@ export default class App extends Component {
       <Router>
         <Header/>
         <Routes>
+          <Route exact path="/" element={<Category />}/>
           <Route exact path="/:category" element={<Category />}/>
           <Route exact path="/CART" element={<Cart />}/>
           <Route exact path="/PDP" element={<PDP />}/>

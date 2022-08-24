@@ -10,16 +10,19 @@ import { connect } from "react-redux"
 import { store } from "../redux/store.js"
 import "../styles/fonts.css"
 
-const GET_CURRENCIES = gql`{
+const GET_CURRENCIES_AND_CATEGORIES = gql`{
   currencies {
      symbol
      label
+  }  
+  categories{
+    name
   }
 }`
 
 class Header extends Component {
       state = {
-          currency: this.props.category
+        currencyStatusOn: false
         };
       //setting currency
       setCurrency = (e) => {
@@ -29,13 +32,13 @@ class Header extends Component {
         this.props.changeCurrency(e.target.id, e.target.innerHTML[0]+e.target.innerHTML[1]);
       };
       //show categories in header
-      showCategories = () => {
-        return ["ALL","TECH","CLOTHES"].map( category => {
+      showCategories = (categories) => {
+        return categories.map( category => {
           return(
-            <div key={category} className={this.props.category === category ? "category clicked" : "category"} onClick={() => {
+            <div key={category.name} className={this.props.category === category.name.toUpperCase() ? "category clicked" : "category"} onClick={() => {
               this.props.close();
-              this.props.changeCategory(category)
-            }}><Link className='text' to={`/${category}`}>{category}</Link></div>
+              this.props.changeCategory(category.name.toUpperCase())
+            }}><Link className='text' to={`/${category.name.toUpperCase()}`}>{category.name.toUpperCase()}</Link></div>
           )
         })
       }
@@ -71,7 +74,7 @@ class Header extends Component {
 
       render() {
           return (
-            <Query query={GET_CURRENCIES}>
+            <Query query={GET_CURRENCIES_AND_CATEGORIES}>
               {({data, loading, error})=>{
                   
                 if (error) return <h1 className='error'>An Error Occured.</h1>
@@ -81,7 +84,7 @@ class Header extends Component {
                 else {
                   return(
                     <header>
-                        <div className="left">{this.showCategories()}</div>
+                        <div className="left">{this.showCategories(data.categories)}</div>
                         <div className="center" onClick={this.props.clearBag}>
                             <img src={logo} alt="logo"/>
                         </div>
