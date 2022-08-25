@@ -9,7 +9,7 @@
     top: 77px;
     right: 90px;
     width: 325px;
-    height: 677px;
+    max-height: 677px;
     background: var(--background-color);
     z-index: 2;
 }
@@ -24,9 +24,8 @@
     flex-direction: column;
     margin-top: 32px;
     margin-left: 16px;
-
     width: 293px;
-    height: 420px;
+    max-height: 420px;
     overflow: auto;
 }
 .products-container > .cart-overlay-item-container{
@@ -95,6 +94,7 @@
 .checkout > .checkout-btns{
     display: flex;
     flex-direction: row;
+    margin-bottom: 20px;
 }
 .checkout-btns > button{
     margin-right: 12px;
