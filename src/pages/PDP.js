@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { useEffect } from 'react'
 import { gql } from '@apollo/client'
 import { Query } from '@apollo/client/react/components'
 import { store } from '../redux/store'
@@ -32,41 +33,15 @@ const GET_PRODUCT_DETAILS = gql`
 
 class PDP extends Component {
   state = {
-    checkedSize: store.getState().productSize,
-    checkedSizeFoot: store.getState().productSizeFoot,
-    checkedColor:store.getState().productColor,
-    checkedCapacity:store.getState().productCapacity,
-    checkedPorts:store.getState().productPorts,
-    checkedKeyboard:store.getState().productKeyboard,
-    checkedIMG: this.props.checkedIMG
+    checkedIMG: this.props.checkedIMG,
+    attributes: this.props.attributes
   }
   //change product chosen attribute value
-  changeAttribute = (e) => {
-    if(e.target.attributes[1].value === "Size" && /\d/.test(e.target.innerHTML)=== false){
-      this.setState({
-        checkedSize: e.target.innerHTML
-      })
-    } else if(e.target.attributes[1].value === "Size" && /\d/.test(e.target.innerHTML)){
-      this.setState({
-        checkedSizeFoot: e.target.innerHTML
-      })
-    } else if(e.target.attributes[1].value === "Color"){
-      this.setState({
-        checkedColor: e.target.id
-      })
-    } else if(e.target.attributes[1].value === "Capacity"){
-      this.setState({
-        checkedCapacity: e.target.innerHTML
-      })
-    } else if(e.target.attributes[1].value === "With USB 3 ports"){
-      this.setState({
-        checkedPorts: e.target.innerHTML
-      })
-    } else{
-      this.setState({
-        checkedKeyboard: e.target.innerHTML
-      })
-    }
+  changeAttribute = (name, value) => {
+    this.state.attributes[name] = value;
+    this.props.updateAttributes({
+      attributes: this.state.attributes
+    })
   }
   //change checked image
   changeImage = (e) => {
@@ -86,16 +61,12 @@ class PDP extends Component {
         quantity: 1,
         attributes: data.attributes.map( attribute => ({
             attributeName: attribute.name,
+            type: attribute.type,
             items: attribute.items.map ( item => ({
-                value: item.value,
-                checkedValue: attribute.name === "Size" && this.state.checkedSize === item.value ? item.value :
-                  attribute.name === "Size" && this.state.checkedSizeFoot === item.value ? item.value :
-                  attribute.name === "Color" && this.state.checkedColor === item.value ? item.value :
-                  attribute.name === "Capacity" && this.state.checkedCapacity === item.value ? item.value :
-                  attribute.name === "With USB 3 ports" && this.state.checkedPorts === item.value ? item.value :
-                  attribute.name === "Touch ID in keyboard" && this.state.checkedKeyboard === item.value ? item.value : ""
+                value: item.value
               })
-            )
+            ),
+            checkedValue: this.state.attributes[attribute.name] || attribute.items[0].value
       }))})
       //show alert that product is added in the cart
       this.props.updateAlertStatus(!this.props.alertStatus);
@@ -132,16 +103,14 @@ class PDP extends Component {
     return inStock ? 'add-to-cart' : 'product-out-of-stock'
   }
   //defining Item class to show off checked attributes
-  defineItemClass = (attributeName, value) => {
-    return attributeName === "Size" && this.state.checkedSize === value ? "size checked-size" :
-    attributeName === "Size" && this.state.checkedSizeFoot === value ? "size checked-size" :
-    attributeName === "Capacity" && this.state.checkedCapacity === value ? "size checked-size" :
-    attributeName === "With USB 3 ports" && this.state.checkedPorts === value ? "size checked-size" :
-    attributeName === "Touch ID in keyboard" && this.state.checkedKeyboard === value ? "size checked-size" : "size" 
+  defineItemClass = (name, value, index) => {
+    return this.props.attributes[name] === undefined && index === 0 ? "size checked-size" :
+    value === this.props.attributes[name] ? "size checked-size" : "size"
   }
   //defining color class
-  defineColorClass = (checkedValue,value) =>{
-    return checkedValue === value ? "color checked-clr" : "color"
+  defineColorClass = (name, value, index) =>{
+    return this.props.attributes[name] === undefined && index === 0 ? "color checked-clr" :
+    this.props.attributes[name] === value ? "color checked-clr" : "color"
   }
   //map attributes
   mapAttributes = (attributes) => {
@@ -156,23 +125,24 @@ class PDP extends Component {
   }
   //showing attribute items
   showItems = (data) => {
-    return data.items.map( item => 
+    return data.items.map( ( item, index ) => 
       {
        if(data.type === "swatch"){
          return(
-           <div key={item.value} id={item.value} type={data.name} className={this.defineColorClass(this.state.checkedColor,item.value)} 
-           onClick={this.changeAttribute} style={{backgroundColor: item.value}}></div>
+           <div key={item.value} id={item.value} type={data.name} className={this.defineColorClass(data.name, item.value, index)} 
+           onClick={() => this.changeAttribute(data.name, item.value)} style={{backgroundColor: item.value}}></div>
          )
        } else {
          return(
-           <div key={item.value} id={item.value} type={data.name} className={this.defineItemClass(data.name,item.value)} 
-             onClick={this.changeAttribute}>{item.value}</div>
+           <div key={item.value} id={item.value} type={data.name} className={this.defineItemClass(data.name, item.value, index)} 
+             onClick={() => this.changeAttribute(data.name, item.value)}>{item.value}</div>
          )
        }
      })
   }
 
   render() {
+    
     return(
       <Query query={GET_PRODUCT_DETAILS} variables={{id: this.props.productID}}>
         {({data, loading, error})=>{
@@ -226,6 +196,7 @@ const mapStateToProps = (state) => {
     productID: state.productID,
     checkedIMG: state.productIMG,
     alertStatus: state.alertStatus,
+    attributes: state.attributes || {},
     cartOverlayStatusOn: state.cartOverlayStatusOn
   };
 };
@@ -234,6 +205,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateBagItems: (bag) =>
       dispatch({ type: "ADD_TO_CART", bag: bag }),
+    updateAttributes: (attributes) =>
+      dispatch({ type: "UPDATE_ATTRIBUTES", attributes: attributes }),
     updateAlertStatus: (status) =>
       dispatch({ type: "CHANGE_ALERT_STATUS", alertStatus: status }),
     close: () =>

@@ -7,7 +7,6 @@ import cart from "../img/cart.png"
 import vector from "../img/Vector.png"
 import CartOverlay from './CartOverlay'
 import { connect } from "react-redux"
-import { store } from "../redux/store.js"
 import "../styles/fonts.css"
 
 const GET_CURRENCIES_AND_CATEGORIES = gql`{
@@ -48,7 +47,7 @@ class Header extends Component {
       }
       //defining currency class
       defineCurrencyClass = (label) => {
-        return store.getState().currency === label ? "valute checked" : "valute"
+        return this.props.currency === label ? "valute checked" : "valute"
       }
       //showing currencies
       showCurrencies = (currencies) => {
@@ -73,6 +72,7 @@ class Header extends Component {
       }
 
       render() {
+
           return (
             <Query query={GET_CURRENCIES_AND_CATEGORIES}>
               {({data, loading, error})=>{
@@ -121,6 +121,7 @@ class Header extends Component {
 const mapStateToProps = (state) => {
   return {
     category: state.category,
+    currency: state.currency,
     currencyStatusOn: state.currencyStatusOn,
     currencySymbol: state.currencySymbol,
     cartOverlayStatusOn: state.cartOverlayStatusOn,

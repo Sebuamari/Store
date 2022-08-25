@@ -3,15 +3,12 @@ import { store } from '../redux/store'
 
 export default class CartOverlayItem extends Component {
   //defining attribute class to show off checked attributes
-  defineAttributeClass = (attributeName,checkedValue, value) => {
-    return attributeName === "Size" && checkedValue === value ? "size-overlay checked-size" :
-    attributeName === "Capacity" && checkedValue === value ? "size-overlay checked-size" :
-    attributeName === "With USB 3 ports" && checkedValue === value ? "size-overlay checked-size" :
-    attributeName === "Touch ID in keyboard" && checkedValue === value ? "size-overlay checked-size" : "size-overlay" 
+  defineAttributeClass = (checkedValue, value) => {
+    return checkedValue === value ? "size-overlay checked-size" : "size-overlay" 
   }
   //defining color class
-  defineColorClass = (checkedValue) =>{
-    return checkedValue ? "color-overlay checked-clr" : "color-overlay"
+  defineColorClass = (checkedValue, value) =>{
+    return checkedValue === value ? "color-overlay checked-clr" : "color-overlay"
   }
   //map attributes
   mapAttributes = (attributes) => {
@@ -27,14 +24,14 @@ export default class CartOverlayItem extends Component {
   //showing attributes
   showAttributes = (data) => {
     return data.items.map( item => {
-      if(data.attributeName === "Color"){
+      if(data.type === "swatch"){
         return(
-          <div key={item.value} id={item.value} type={data.attributeName} className={this.defineColorClass(item.checkedValue)} 
+          <div key={item.value} id={item.value} type={data.attributeName} className={this.defineColorClass(data.checkedValue, item.value)} 
           onClick={this.changeAttribute} style={{backgroundColor: item.value}}></div>
         )
       } else {
         return(
-          <div key={item.value} id={item.value} type={data.attributeName} className={ this.defineAttributeClass(data.attributeName,item.checkedValue,item.value) } 
+          <div key={item.value} id={item.value} type={data.attributeName} className={ this.defineAttributeClass(data.checkedValue,item.value) } 
             >{item.value}</div>
         )
       }

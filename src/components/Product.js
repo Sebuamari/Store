@@ -14,16 +14,13 @@ class Product extends Component {
       quantity: 1,
       attributes: this.props.productData.attributes.map( attribute => ({
           attributeName: attribute.name,
+          type: attribute.type,
           items: attribute.items.map ( item => ({
-            value: item.value,
-            checkedValue: attribute.name === "Size" && /\d/.test(item.value) ? "40" :
-            attribute.name === "Size" && /\d/.test(item.value)===false ? "S" :
-            attribute.name === "Capacity" && this.props.productData.name === "iMac 2021" ? "256GB" :
-            attribute.name === "Capacity" && this.props.productData.name !== "iMac 2021" ? "512G" :
-            attribute.name === "With USB 3 ports" ? "Yes" :
-            attribute.type === "Touch ID in keyboard" ? "Yes" : "#44FF03"
+            value: item.value
           })
-      )})) 
+          ),
+          checkedValue: attribute.items[0].value
+      })) 
     });
     this.props.updateAlertStatus(!this.props.alertStatus);
     setTimeout(() => {
@@ -31,10 +28,9 @@ class Product extends Component {
     }, 2000);
   }
   //saving product data to show again in case of page refreshing
-  saveData = (capacity,image) => {
+  saveData = (image) => {
     this.props.changeProductId(this.props.productData.id)
     this.props.changeProductImg(image[0])
-    this.props.changeProductCapacity(capacity)
     this.props.changeProductBrand(this.props.productData.brand)
   }
   //defininig Stock Class
@@ -47,16 +43,14 @@ class Product extends Component {
   }
 
   render() {
-    //declairing some default attribute values to save them and show the same product again in case of refreshing the page
-    let capacity = this.props.productData.attributes.filter( attribute => attribute.name === "Capacity").length > 0 ? 
-      this.props.productData.attributes.filter( attribute => attribute.name === "Capacity")[0].items[0].value : "";
+    //declairing default image and product price
     let price = this.props.productData.prices.filter( price => price.currency.label===this.props.currency)[0].amount
     + this.props.productData.prices.filter( price => price.currency.label===this.props.currency)[0].currency.symbol;
     let image = this.props.productData.gallery;
 
     return (
       <div id="product" className={this.props.filterClass}>
-          <div className='product-view' onClick={() => {this.saveData(capacity,image)}}>
+          <div className='product-view' onClick={() => {this.saveData(image)}}>
             <Link to={this.props.link}>
               <img className={this.props.imgClass} src={image[0]} alt="Product" />
             </Link>
@@ -83,18 +77,6 @@ const mapDispatchToProps = (dispatch) => {
       dispatch({ type: "PRODUCTID_UPDATE", productID: id }),
     changeProductImg: (image) =>
       dispatch({ type: "PRODUCTIMG_UPDATE", productIMG: image }),
-    changeProductSize: (size) =>
-      dispatch({ type: "PRODUCTSIZE_UPDATE", productSize: size }),
-    changeProductSizeFoot: (size) =>
-      dispatch({ type: "PRODUCTSIZEFOOT_UPDATE", productSizeFoot: size }),
-    changeProductColor: (color) =>
-      dispatch({ type: "PRODUCTCOLOR_UPDATE", productColor: color }),
-    changeProductCapacity: (capacity) =>
-      dispatch({ type: "PRODUCTCAPACITY_UPDATE", productCapacity: capacity }),
-    changeProductPorts: (ports) =>
-      dispatch({ type: "PRODUCTPORTS_UPDATE", productPorts: ports }),
-    changeProductKeyboard: (keyboard) =>
-      dispatch({ type: "PRODUCTKEYBOARD_UPDATE", productKeyboard: keyboard }),
     changeProductBrand: (brand) =>
       dispatch({ type: "PRODUCTBRAND_UPDATE", productBrand: brand }),
     updateBagItems: (bag) =>

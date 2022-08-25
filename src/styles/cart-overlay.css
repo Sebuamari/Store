@@ -62,7 +62,8 @@
 .choices > .color-overlay{
     width: 16px;
     height: 16px;
-    margin-right: 8px;
+    margin-left: 2px;
+    margin-right: 5px;
     border: 1px solid rgba(0, 0, 0, 0.2);
 }
 .choices > .checked{
